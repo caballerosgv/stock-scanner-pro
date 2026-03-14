@@ -181,6 +181,55 @@ pyinstaller --onefile --name stock-scanner-launcher backend/exe_launcher.py
 
 4. Abre el dashboard en la URL que te muestre la consola (por defecto `http://127.0.0.1:8000/dashboard`).
 
+## Empaquetar en un instalador `setup.exe` (Windows)
+
+Sí, también se puede empaquetar como instalador clásico `setup.exe`.
+
+La idea es:
+- construir primero `stock-scanner-launcher.exe` con PyInstaller,
+- incluir ese `.exe` dentro de un instalador (por ejemplo, con Inno Setup),
+- crear accesos directos para que el usuario final lo abra sin usar terminal.
+
+### 1) Generar el ejecutable base
+
+```powershell
+pip install -e .
+pip install pyinstaller
+pyinstaller --onefile --name stock-scanner-launcher backend/exe_launcher.py
+```
+
+### 2) Crear `setup.exe` con Inno Setup
+
+1. Instala Inno Setup.
+2. Crea un archivo `installer/stock-scanner-pro.iss` con este contenido:
+
+```iss
+[Setup]
+AppName=Stock Scanner Pro
+AppVersion=0.1.0
+DefaultDirName={autopf}\Stock Scanner Pro
+DefaultGroupName=Stock Scanner Pro
+OutputDir=dist
+OutputBaseFilename=stock-scanner-setup
+Compression=lzma
+SolidCompression=yes
+
+[Files]
+Source: "dist\stock-scanner-launcher.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\Stock Scanner Pro"; Filename: "{app}\stock-scanner-launcher.exe"
+Name: "{autodesktop}\Stock Scanner Pro"; Filename: "{app}\stock-scanner-launcher.exe"; Tasks: desktopicon
+
+[Tasks]
+Name: "desktopicon"; Description: "Crear acceso directo en el escritorio"; GroupDescription: "Accesos directos:"; Flags: unchecked
+```
+
+3. Compila el script desde Inno Setup Compiler.
+4. El instalador final quedará en `dist/stock-scanner-setup.exe`.
+
+Con esto, sí tendrás una experiencia “instalar y abrir” para la app web local.
+
 ## Problemas comunes
 
 - **`ModuleNotFoundError` al iniciar**: verifica que el entorno virtual esté activo y vuelve a ejecutar `pip install -e .[dev]`.
