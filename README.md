@@ -45,16 +45,93 @@ frontend/
 - Logging estructurado + manejo básico de errores.
 - Tests base para scoring, engine y API.
 
-## Cómo ejecutar
+## Guía paso a paso para hacerlo funcionar
+
+### 1) Verificar prerrequisitos
+Antes de empezar, asegúrate de tener:
+
+- Python 3.11+ instalado.
+- `pip` disponible.
+- Un navegador web moderno (Chrome, Firefox, Edge).
+
+Comando sugerido para verificar Python:
+
+```bash
+python --version
+```
+
+### 2) Clonar el repositorio
+
+```bash
+git clone <URL_DEL_REPO>
+cd stock-scanner-pro
+```
+
+> Si ya tienes el proyecto descargado, solo entra a la carpeta raíz.
+
+### 3) Crear y activar entorno virtual
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+```
+
+En Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+### 4) Instalar dependencias
+
+```bash
 pip install -e .[dev]
+```
+
+Esto instala backend, librerías de desarrollo y tests.
+
+### 5) Levantar la API
+
+```bash
 uvicorn backend.main:app --reload
 ```
 
-Abrir: `http://127.0.0.1:8000`
+Si todo está bien, verás logs de FastAPI/Uvicorn indicando que el servidor está corriendo.
+
+### 6) Abrir la aplicación en el navegador
+
+- API base: `http://127.0.0.1:8000`
+- Healthcheck: `http://127.0.0.1:8000/health`
+- Dashboard: `http://127.0.0.1:8000/dashboard`
+
+### 7) Probar un escaneo rápido
+Puedes lanzar un escaneo desde el dashboard o por API:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/scan
+```
+
+Luego consultar resultados:
+
+```bash
+curl http://127.0.0.1:8000/api/results
+```
+
+### 8) (Opcional) Ejecutar tests
+
+```bash
+pytest
+```
+
+## Problemas comunes
+
+- **`ModuleNotFoundError` al iniciar**: verifica que el entorno virtual esté activo y vuelve a ejecutar `pip install -e .[dev]`.
+- **Puerto en uso (`8000`)**: arranca en otro puerto, por ejemplo:
+  ```bash
+  uvicorn backend.main:app --reload --port 8001
+  ```
+- **No carga el dashboard**: confirma que estés usando la ruta `http://127.0.0.1:8000/dashboard` y no solo la raíz.
 
 ## Endpoints
 - `GET /health`
