@@ -16,6 +16,43 @@ body {
   margin: 0 auto;
   padding: 24px;
 }
+.panel {
+  background: #0b1220;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.provider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.provider-card {
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.provider-card h3 {
+  margin: 0;
+}
+.provider-status {
+  margin: 0;
+  font-size: 13px;
+}
+.provider-status.ok {
+  color: #86efac;
+}
+.provider-status.pending {
+  color: #fca5a5;
+}
+.muted {
+  color: var(--muted);
+}
 .toolbar {
   display: flex;
   gap: 12px;
