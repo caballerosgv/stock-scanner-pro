@@ -24,3 +24,17 @@ class ScanResultDTO(BaseModel):
 class ScanResponse(BaseModel):
     total: int
     results: list[ScanResultDTO]
+
+
+class ProviderConfigDTO(BaseModel):
+    provider: str
+    configured: bool
+    updated_at: datetime | None = None
+
+
+class ProviderConfigUpdate(BaseModel):
+    api_key: str
+
+
+class ProviderConfigResponse(BaseModel):
+    providers: list[ProviderConfigDTO]

@@ -6,7 +6,7 @@ from datetime import datetime
 from sqlalchemy import Select, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.database.models import ScanResult
+from backend.database.models import ProviderConfig, ScanResult
 from backend.scanner.types import ScanOutcome
 
 
@@ -43,3 +43,24 @@ class ScanRepository:
         )
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
+
+    async def get_provider_configs(self) -> list[ProviderConfig]:
+        stmt: Select[tuple[ProviderConfig]] = select(ProviderConfig).order_by(ProviderConfig.provider)
+        result = await self._session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def upsert_provider_config(self, provider: str, api_key: str) -> ProviderConfig:
+        stmt: Select[tuple[ProviderConfig]] = select(ProviderConfig).where(ProviderConfig.provider == provider)
+        result = await self._session.execute(stmt)
+        row = result.scalar_one_or_none()
+
+        if row is None:
+            row = ProviderConfig(provider=provider, api_key=api_key)
+            self._session.add(row)
+        else:
+            row.api_key = api_key
+            row.updated_at = datetime.utcnow()
+
+        await self._session.commit()
+        await self._session.refresh(row)
+        return row

@@ -2,12 +2,18 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.api.schemas import ScanResponse, ScanResultDTO
+from backend.api.schemas import (
+    ProviderConfigDTO,
+    ProviderConfigResponse,
+    ProviderConfigUpdate,
+    ScanResponse,
+    ScanResultDTO,
+)
 from backend.api.service import ScanService
 from backend.database.bootstrap import init_db
 from backend.database.repository import ScanRepository
@@ -17,6 +23,7 @@ from backend.logging_config import configure_logging
 configure_logging()
 app = FastAPI(title="Stock Scanner Pro", version="0.1.0")
 service = ScanService()
+SUPPORTED_PROVIDERS = ["polygon", "iex", "alpaca", "finnhub", "twelvedata"]
 
 frontend_dir = Path(__file__).resolve().parents[2] / "frontend"
 app.mount("/assets", StaticFiles(directory=str(frontend_dir / "components")), name="assets")
@@ -79,6 +86,37 @@ async def get_results(session: AsyncSession = Depends(get_session)) -> ScanRespo
         for row in rows
     ]
     return ScanResponse(total=len(results), results=results)
+
+
+@app.get("/api/provider-configs", response_model=ProviderConfigResponse)
+async def get_provider_configs(session: AsyncSession = Depends(get_session)) -> ProviderConfigResponse:
+    repo = ScanRepository(session)
+    rows = await repo.get_provider_configs()
+    row_map = {row.provider: row for row in rows}
+    providers = [
+        ProviderConfigDTO(
+            provider=provider,
+            configured=bool(row_map.get(provider) and row_map[provider].api_key),
+            updated_at=row_map[provider].updated_at if provider in row_map else None,
+        )
+        for provider in SUPPORTED_PROVIDERS
+    ]
+    return ProviderConfigResponse(providers=providers)
+
+
+@app.put("/api/provider-configs/{provider}", response_model=ProviderConfigDTO)
+async def upsert_provider_config(
+    provider: str,
+    payload: ProviderConfigUpdate,
+    session: AsyncSession = Depends(get_session),
+) -> ProviderConfigDTO:
+    provider = provider.lower()
+    if provider not in SUPPORTED_PROVIDERS:
+        raise HTTPException(status_code=404, detail="Proveedor no soportado")
+
+    repo = ScanRepository(session)
+    row = await repo.upsert_provider_config(provider=provider, api_key=payload.api_key.strip())
+    return ProviderConfigDTO(provider=row.provider, configured=bool(row.api_key), updated_at=row.updated_at)
 
 
 @app.get("/")

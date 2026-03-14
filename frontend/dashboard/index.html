@@ -10,6 +10,13 @@
   <div class="container">
     <h1>Stock Scanner Pro</h1>
     <p>Escáner profesional tipo TradingView con actualización cada 45s.</p>
+
+    <section class="panel provider-panel">
+      <h2>API Keys de proveedores</h2>
+      <p class="muted">Configura las llaves API para proveedores de datos. Se guardan en el backend y puedes actualizarlas cuando quieras.</p>
+      <div id="providerSettings" class="provider-grid"></div>
+    </section>
+
     <div class="toolbar">
       <button id="scanBtn">Ejecutar escaneo</button>
       <label>Score mínimo <input id="minScore" type="number" min="0" max="10" value="6" /></label>
@@ -40,10 +47,11 @@
     </table>
   </div>
   <script>
-    const state = { results: [], sortBy: 'score', sortDir: 'desc' };
+    const state = { results: [], sortBy: 'score', sortDir: 'desc', providerConfigs: [] };
 
     const statusEl = document.getElementById('status');
     const tableBody = document.querySelector('#resultsTable tbody');
+    const providerSettingsEl = document.getElementById('providerSettings');
 
     async function fetchResults(path = '/api/results') {
       const res = await fetch(path, { method: path.includes('scan') ? 'POST' : 'GET' });
@@ -51,6 +59,62 @@
       state.results = data.results || [];
       render();
       statusEl.textContent = `${data.total} símbolos procesados (${new Date().toLocaleTimeString()})`;
+    }
+
+    async function fetchProviderConfigs() {
+      const res = await fetch('/api/provider-configs');
+      const data = await res.json();
+      state.providerConfigs = data.providers || [];
+      renderProviders();
+    }
+
+    async function saveProviderConfig(provider, apiKey, statusEl) {
+      statusEl.textContent = 'Guardando...';
+      const res = await fetch(`/api/provider-configs/${provider}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ api_key: apiKey })
+      });
+
+      if (!res.ok) {
+        statusEl.textContent = 'Error al guardar';
+        return;
+      }
+
+      statusEl.textContent = 'Guardado correctamente';
+      await fetchProviderConfigs();
+    }
+
+    function renderProviders() {
+      providerSettingsEl.innerHTML = state.providerConfigs.map((config) => {
+        const lastUpdate = config.updated_at ? new Date(config.updated_at).toLocaleString() : 'Nunca';
+        const statusClass = config.configured ? 'provider-status ok' : 'provider-status pending';
+        const statusText = config.configured ? 'Configurado' : 'Sin configurar';
+
+        return `
+          <form class="provider-card" data-provider="${config.provider}">
+            <h3>${config.provider.toUpperCase()}</h3>
+            <p class="${statusClass}">${statusText}</p>
+            <label>API key
+              <input type="password" name="api_key" placeholder="Pega tu API key aquí" autocomplete="off" />
+            </label>
+            <small class="muted">Última actualización: ${lastUpdate}</small>
+            <button type="submit">Guardar</button>
+            <small class="form-status muted"></small>
+          </form>
+        `;
+      }).join('');
+
+      document.querySelectorAll('.provider-card').forEach((form) => {
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const provider = form.dataset.provider;
+          const apiKey = form.querySelector('input[name="api_key"]').value;
+          const formStatusEl = form.querySelector('.form-status');
+          await saveProviderConfig(provider, apiKey, formStatusEl);
+          form.querySelector('input[name="api_key"]').value = '';
+        });
+      });
     }
 
     function render() {
@@ -102,6 +166,7 @@
       });
     });
 
+    fetchProviderConfigs();
     fetchResults();
     setInterval(() => fetchResults('/api/results'), 45000);
   </script>

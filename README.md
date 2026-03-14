@@ -60,6 +60,8 @@ Abrir: `http://127.0.0.1:8000`
 - `GET /health`
 - `POST /api/scan` Ejecuta escaneo completo.
 - `GET /api/results` Últimos resultados persistidos.
+- `GET /api/provider-configs` Estado de configuración de APIs por proveedor.
+- `PUT /api/provider-configs/{provider}` Guarda o actualiza la API key de un proveedor.
 
 ## Notas de producción
 - Cambiar `DATABASE_URL` a PostgreSQL para entorno real.

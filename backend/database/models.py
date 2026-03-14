@@ -27,3 +27,12 @@ class ScanResult(Base):
     macd: Mapped[float] = mapped_column(Float)
     signal: Mapped[str] = mapped_column(String(64), default="none")
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+
+
+class ProviderConfig(Base):
+    __tablename__ = "provider_configs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    provider: Mapped[str] = mapped_column(String(32), unique=True, index=True)
+    api_key: Mapped[str] = mapped_column(String(256), default="")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
