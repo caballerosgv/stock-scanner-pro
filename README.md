@@ -127,13 +127,22 @@ pytest
 
 ## Atajos con archivos ejecutables (1, 2, 3, 4)
 
-Si prefieres ejecutar el setup con scripts numerados, usa:
+Si prefieres ejecutar el setup con scripts numerados en Linux/macOS, usa:
 
 ```bash
 ./scripts/1_verificar_prerrequisitos.sh
 ./scripts/2_crear_entorno.sh
 ./scripts/3_instalar_dependencias.sh
 ./scripts/4_levantar_api.sh
+```
+
+En Windows con PowerShell, usa:
+
+```powershell
+.\scripts\1_verificar_prerrequisitos.ps1
+.\scripts\2_crear_entorno.ps1
+.\scripts\3_instalar_dependencias.ps1
+.\scripts\4_levantar_api.ps1
 ```
 
 > Nota: el script 4 deja corriendo Uvicorn en primer plano.
