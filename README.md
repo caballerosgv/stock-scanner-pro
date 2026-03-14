@@ -147,6 +147,40 @@ En Windows con PowerShell, usa:
 
 > Nota: el script 4 deja corriendo Uvicorn en primer plano.
 
+
+## Generar un `.exe` que pida datos en consola (Windows)
+
+Sí, se puede. Incluimos un launcher interactivo en `backend/exe_launcher.py` que te pide:
+- host
+- puerto
+- segundos de refresco
+- tamaño de universo
+
+Luego arranca la API automáticamente con esos valores.
+
+### Pasos rápidos
+
+1. Activa tu entorno virtual e instala dependencias:
+
+```powershell
+pip install -e .
+pip install pyinstaller
+```
+
+2. Genera el ejecutable:
+
+```powershell
+pyinstaller --onefile --name stock-scanner-launcher backend/exe_launcher.py
+```
+
+3. Ejecuta el `.exe` generado:
+
+```powershell
+.\dist\stock-scanner-launcher.exe
+```
+
+4. Abre el dashboard en la URL que te muestre la consola (por defecto `http://127.0.0.1:8000/dashboard`).
+
 ## Problemas comunes
 
 - **`ModuleNotFoundError` al iniciar**: verifica que el entorno virtual esté activo y vuelve a ejecutar `pip install -e .[dev]`.
