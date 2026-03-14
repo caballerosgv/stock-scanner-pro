@@ -124,6 +124,20 @@ curl http://127.0.0.1:8000/api/results
 pytest
 ```
 
+
+## Atajos con archivos ejecutables (1, 2, 3, 4)
+
+Si prefieres ejecutar el setup con scripts numerados, usa:
+
+```bash
+./scripts/1_verificar_prerrequisitos.sh
+./scripts/2_crear_entorno.sh
+./scripts/3_instalar_dependencias.sh
+./scripts/4_levantar_api.sh
+```
+
+> Nota: el script 4 deja corriendo Uvicorn en primer plano.
+
 ## Problemas comunes
 
 - **`ModuleNotFoundError` al iniciar**: verifica que el entorno virtual esté activo y vuelve a ejecutar `pip install -e .[dev]`.
