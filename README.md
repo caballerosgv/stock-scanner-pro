@@ -201,7 +201,7 @@ pyinstaller --onefile --name stock-scanner-launcher backend/exe_launcher.py
 ### 2) Crear `setup.exe` con Inno Setup
 
 1. Instala Inno Setup.
-2. Crea un archivo `installer/stock-scanner-pro.iss` con este contenido:
+2. El repositorio ya incluye `installer/stock-scanner-pro.iss` con este contenido base (puedes ajustarlo si lo necesitas):
 
 ```iss
 [Setup]
@@ -225,7 +225,11 @@ Name: "{autodesktop}\Stock Scanner Pro"; Filename: "{app}\stock-scanner-launcher
 Name: "desktopicon"; Description: "Crear acceso directo en el escritorio"; GroupDescription: "Accesos directos:"; Flags: unchecked
 ```
 
-3. Compila el script desde Inno Setup Compiler.
+3. Compila el script desde Inno Setup Compiler o por línea de comandos:
+
+```powershell
+iscc installer\stock-scanner-pro.iss
+```
 4. El instalador final quedará en `dist/stock-scanner-setup.exe`.
 
 Con esto, sí tendrás una experiencia “instalar y abrir” para la app web local.
