@@ -75,6 +75,14 @@ Proveedores soportados:
 - alpaca
 - finnhub
 - twelvedata
+- xtb
+
+Configuración opcional para XTB (lectura desde SQLite):
+```bash
+export XTB_DATABASE_PATH=/ruta/a/xtb.db
+export XTB_TABLE_NAME=xtb_ohlcv
+```
+La tabla esperada debe contener al menos: `symbol`, `timestamp`, `open`, `high`, `low`, `close`, `volume`.
 
 ## Scripts de apoyo
 Se incluyen scripts numerados para setup y ejecución en `scripts/`:

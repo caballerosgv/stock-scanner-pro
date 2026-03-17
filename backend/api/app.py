@@ -23,7 +23,7 @@ from backend.logging_config import configure_logging
 configure_logging()
 app = FastAPI(title="Stock Scanner Pro", version="0.1.0")
 service = ScanService()
-SUPPORTED_PROVIDERS = ["polygon", "iex", "alpaca", "finnhub", "twelvedata"]
+SUPPORTED_PROVIDERS = ["polygon", "iex", "alpaca", "finnhub", "twelvedata", "xtb"]
 
 frontend_dir = Path(__file__).resolve().parents[2] / "frontend"
 app.mount("/assets", StaticFiles(directory=str(frontend_dir / "components")), name="assets")
