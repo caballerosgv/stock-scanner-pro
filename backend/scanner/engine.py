@@ -5,7 +5,7 @@ import logging
 from collections.abc import Sequence
 
 from backend.indicators.calculator import compute_indicators
-from backend.scanner.market_data import SyntheticMarketDataProvider
+from backend.scanner.market_data import MarketDataProvider
 from backend.scanner.scoring import calculate_score
 from backend.scanner.types import ScanOutcome
 from backend.scanner.universe import Ticker
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class ScanEngine:
     def __init__(self, max_concurrency: int = 50) -> None:
-        self._provider = SyntheticMarketDataProvider()
+        self._provider = MarketDataProvider()
         self._sem = asyncio.Semaphore(max_concurrency)
 
     async def scan_universe(self, tickers: Sequence[Ticker]) -> list[ScanOutcome]:
